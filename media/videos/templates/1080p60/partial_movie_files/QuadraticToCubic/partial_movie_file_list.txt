@@ -1,4 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:D:/codes/manim-proj/media/videos/templates/1080p60/partial_movie_files/QuadraticToCubic/3529212410_1058683276_223132457.mp4'
-file 'file:D:/codes/manim-proj/media/videos/templates/1080p60/partial_movie_files/QuadraticToCubic/3040924799_2290987802_2772909471.mp4'
-file 'file:D:/codes/manim-proj/media/videos/templates/1080p60/partial_movie_files/QuadraticToCubic/3040924799_1141282389_3527669602.mp4'
