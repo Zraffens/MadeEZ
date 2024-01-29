@@ -224,6 +224,34 @@ class CubicToDepressedCubic(Scene):
         self.wait(2)
 
 
+class SimplifyCubic(Scene):
+     def construct(self):
+        # Given cubic equation
+        cubic_equation = MathTex(
+            "x", "^3" "+", "px", "+", "q", "=", "0"
+        ).set_color_by_gradient(BLUE, GREEN).scale(1.5)
+        cubic_equation.to_edge(UP)
+
+        # Expression involving cube roots (initially hidden)
+        cube_root_expression = MathTex("x = "
+            "\\sqrt[^3]{", "-\\frac{q}{2}", "+", "\\sqrt{", "\\frac{q^2}{4}", "+", "\\frac{p^3}{27}", "}",
+            "}", "-", "\\sqrt[^3]{", "-\\frac{q}{2}", "-", "\\sqrt{", "\\frac{q^2}{4}", "+", "\\frac{p^3}{27}", "\}","\}"
+        ).set_color_by_gradient(BLUE, GREEN).scale(1.2)
+        cube_root_expression.next_to(cubic_equation, DOWN)
+
+        # Display the cubic equation
+        self.play(Write(cubic_equation))
+        self.wait()
+
+        # Transform cubic equation to cube root expression
+        self.play(TransformMatchingShapes(
+            VGroup(cubic_equation.copy()[0], cubic_equation.copy()[-2]),
+            VGroup(cube_root_expression[0], cube_root_expression[6]),
+        ), Write(cube_root_expression[1:]), run_time=2)
+
+        self.wait(2)
+
+
 
 class IVF(Scene):
     def construct(self):
