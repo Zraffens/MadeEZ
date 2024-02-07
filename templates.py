@@ -251,6 +251,101 @@ class SimplifyCubic(Scene):
 
         self.wait(2)
 
+        self.play(FadeOut(cubic_equation), FadeOut(cube_root_expression))
+
+class EquationConnection(Scene):
+    def construct(self):
+        # First equation
+        equation_first = MathTex("x^3", "+", "6x", "-", "20", "=", "0").set_color_by_gradient(BLUE, GREEN)
+        equation_first.scale(1.5)
+        equation_first.to_edge(UP)
+
+        # Second equation
+        equation_second = MathTex("p =", "6", ",", "q =", "-20").set_color_by_gradient(BLUE, GREEN)
+        equation_second.scale(1.5)
+        equation_second.next_to(equation_first, DOWN)
+
+        # Cube root expression
+        cube_root_expression = MathTex("x =", "\\sqrt[^3]{", "-\\frac{q}{2}", "+", "\\sqrt{", "\\frac{q^2}{4}", "+", "\\frac{p^3}{27}", "}", "}", "-", "\\sqrt[^3]{", "-\\frac{q}{2}", "-", "\\sqrt{", "\\frac{q^2}{4}", "+", "\\frac{p^3}{27}", "\}", "\}").set_color_by_gradient(BLUE, GREEN).scale(0.8)
+
+        cube_root_expression.next_to(equation_second, DOWN)
+        
+        substituted_eqn = MathTex("x =", "\\sqrt[^3]{", "-\\frac{(-20)}{2}", "+", "\\sqrt{", "\\frac{(-20)^2}{4}", "+", "\\frac{6^3}{27}", "}", "}", "-", "\\sqrt[^3]{", "-\\frac{(-20)}{2}", "-", "\\sqrt{", "\\frac{(-20)^2}{4}", "+", "\\frac{6^3}{27}", "\}", "\}").set_color_by_gradient(BLUE, GREEN).scale(0.8)
+        substituted_eqn.next_to(cube_root_expression, DOWN)
+        simplified = MathTex("x = ",
+            "\\sqrt[^3]{", "10", "+", "\\sqrt{", "100", "+", "8", "}",
+            "}", "-", "\\sqrt[^3]{", "10", "-", "\\sqrt{", "100", "+", "8", "\}", "\}").set_color_by_gradient(BLUE, GREEN)
+        simplified.next_to(substituted_eqn, DOWN)
+        simplified2 = MathTex("x = ",
+            "\\sqrt[^3]{",
+                "\\left(",
+                    "\\sqrt[^3]{10 + \\sqrt{108}}",
+                    "-",
+                    "\\sqrt[^3]{10 - \\sqrt{108}}",
+                "\\right)^3",
+            "}").set_color_by_gradient(BLUE, GREEN)
+        simplified2.next_to(simplified, DOWN)
+        # Display equations and expressions
+        self.play(Write(equation_first))
+        self.wait(2)
+        self.play(Write(equation_second))
+        self.wait(2)
+        self.play(Write(cube_root_expression))
+        self.wait(2)
+        # Transform equations
+        self.play(
+            TransformMatchingShapes(
+                VGroup(
+                    equation_second.copy()[1],
+                    equation_second.copy()[1],
+                    equation_second.copy()[4],
+                    equation_second.copy()[4],
+                    equation_second.copy()[4],
+                    equation_second.copy()[4],
+                ),
+                VGroup(
+                    substituted_eqn[7],
+                    substituted_eqn[17],
+                    substituted_eqn[2],
+                    substituted_eqn[5],
+                    substituted_eqn[12],
+                    substituted_eqn[15],
+                ),
+            ),
+            TransformMatchingShapes(
+                VGroup(
+                    cube_root_expression.copy()[:2],
+                    cube_root_expression.copy()[3:5],
+                    cube_root_expression.copy()[6],
+                    cube_root_expression.copy()[8:12],
+                    cube_root_expression.copy()[13:15],
+                    cube_root_expression.copy()[16:],
+                ),
+                VGroup(
+                    substituted_eqn[:2],
+                    substituted_eqn[3:5],
+                    substituted_eqn[6],
+                    substituted_eqn[8:12],
+                    substituted_eqn[13:15],
+                    substituted_eqn[16:],
+                )
+            ),
+            run_time=2.7
+        )
+        self.wait(2)
+        self.play(TransformMatchingShapes(
+            substituted_eqn.copy(),
+            simplified,
+            run_time=2
+        ))
+        self.wait(2)
+        self.wait(2)
+        self.play(TransformMatchingShapes(
+            simplified.copy(),
+            simplified2,
+            run_time=2
+        ))
+        self.wait(2)
 
 
 class IVF(Scene):
@@ -258,24 +353,25 @@ class IVF(Scene):
         # Create graph
         axes = Axes(
             x_range=[-10, 10],
-            y_range=[-10, 10],
+            y_range=[-20, 10],
             axis_config={"color": BLUE},
         )
         label = MathTex(
-            "f(x)= x^3 - 4x + 1"
+            "f(x)= x^3 - 4x + 4"
         ).set(width=2.5).next_to(axes, UP, buff=0.2).set_color(RED_C)
-        graph = axes.plot(lambda x: x**3 - 4*x + 1, color=WHITE)
+        graph = axes.plot(lambda x: x**3 - 4*x + 4, color=WHITE)
 
-        # Create point and line
-        point = ValueTracker(-3)
-        line = always_redraw(lambda: self.get_line(point, graph, axes))
-        projection_area = always_redraw(lambda: self.get_projection_area(point, graph, axes))
+        # Create point1 and line
+        point1 = ValueTracker(-4)
+        point2 = ValueTracker(3)
 
-        # Animation
+        line1 = always_redraw(lambda: self.get_line(point1, graph, axes))
+        line2 = always_redraw(lambda: self.get_line(point2, graph, axes))
+
         self.play(DrawBorderThenFill(axes), Write(graph), Write(label))
-        self.play(Create(line))
-        self.play(Create(projection_area))
-        self.play(point.animate.set_value(3), run_time=10, rate_func=linear)
+        self.play(Create(line1), Create(line2))
+        self.play(point1.animate.set_value(-2.38), 
+            point2.animate.set_value(-2.38), run_time=5, rate_func=linear)
         self.wait()
 
     def get_line(self, point, graph, axes):
@@ -289,28 +385,6 @@ class IVF(Scene):
             stroke_color=BLUE,
         )
         dot = Dot().set_color(BLUE).move_to(axes.c2p(x, graph.underlying_function(x)))
-        moving_label = always_redraw(lambda: self.dot_text(point, dot, graph.underlying_function)
-        )
-        result.add(line, dot, moving_label)
+        result.add(line, dot)
         return result
     
-    def dot_text(self, point, dot, func):
-        x = point.get_value()
-        y = func(x)
-        condition = ''
-        if y > 0:
-            condition = "Slightly Positive" if y <= 4.079 else "Extremely Positive"
-        else:
-            condition = "Slightly Negative" if y >= -2.079 else "Extremely Negative"
-        return MathTex(condition).set(width=2.5).next_to(dot, LEFT, buff=0.2).set_color(RED_C).scale(0.9)
-
-
-    def get_projection_area(self, point, graph, axes):
-        x = point.get_value()
-        y_value = graph.underlying_function(x)
-        
-        area_start = axes.c2p(0.02, 0)
-        area_end = axes.c2p(0.02, y_value)
-        area = Polygon(axes.c2p(-0.02, 0), area_start, area_end, axes.c2p(0.02, y_value), fill_color=YELLOW, fill_opacity=0.3, stroke_width=0)
-        
-        return area
